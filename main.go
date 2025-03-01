@@ -5,12 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"os/exec"
-	"runtime"
 	"strconv"
 	"strings"
-	"unicode"
-	"unicode/utf8"
+	"tasks/utils"
 )
 
 const menu = "1 - Создать задачу\n2 - Удалить задачу\n3 - Добавить/убрать отметку\n4 - Выйти\n"
@@ -42,12 +39,12 @@ func startApp() {
 func scanChoice(tasks []string, marks []bool, start bool) (int, error) {
 	reader := bufio.NewReader(os.Stdin)
 
-	clearScreen()
+	utils.ClearScreen()
 	printTasks(tasks, marks)
 
 	if start {
 		fmt.Print(menu)
-		printLine(tasks)
+		utils.PrintLine(tasks)
 		fmt.Print("[1-4] ")
 	} else {
 		if tasks == nil {
@@ -67,7 +64,7 @@ func scanChoice(tasks []string, marks []bool, start bool) (int, error) {
 
 	input = strings.TrimSpace(input)
 
-	if isDigitString(input) {
+	if utils.IsDigitString(input) {
 		input_num, err := strconv.Atoi(input)
 		if err != nil {
 			return -1, errors.New("input error")
@@ -85,15 +82,6 @@ func scanChoice(tasks []string, marks []bool, start bool) (int, error) {
 	return -1, errors.New("некорректный ввод")
 }
 
-func isDigitString(s string) bool {
-	for _, char := range s {
-		if !unicode.IsDigit(char) {
-			return false
-		}
-	}
-	return true
-}
-
 func printTasks(tasks []string, marks []bool) {
 	if len(tasks) == 0 {
 		return
@@ -106,44 +94,14 @@ func printTasks(tasks []string, marks []bool) {
 			fmt.Printf("%d: [ ] %s\n", i+1, task)
 		}
 	}
-	printLine(tasks)
-}
-
-func printLine(tasks []string) {
-	max := 27
-
-	mxNum := len(tasks)
-	for _, task := range tasks {
-		if mxNum+utf8.RuneCountInString(task)+6 > max {
-			max = mxNum + utf8.RuneCountInString(task) + 6
-		}
-	}
-
-	line := ""
-	for range max {
-		line += "-"
-	}
-	fmt.Println(line)
-}
-
-func clearScreen() {
-	switch runtime.GOOS {
-	case "windows":
-		cmd := exec.Command("cmd", "/c", "cls")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	default:
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
+	utils.PrintLine(tasks)
 }
 
 func newTask(tasks []string, marks []bool) ([]string, []bool) {
 	reader := bufio.NewReader(os.Stdin)
 
 	for {
-		clearScreen()
+		utils.ClearScreen()
 		printTasks(tasks, marks)
 
 		if len(tasks) == 0 {
