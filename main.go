@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"tasks/utils"
@@ -133,8 +134,8 @@ func deleteTask(tasks []string, marks []bool) ([]string, []bool) {
 	index, err := scanChoice(tasks, marks, false)
 
 	if index > 0 && index <= len(tasks) && err == nil {
-		tasks = append(tasks[:index-1], tasks[index:]...)
-		marks = append(marks[:index-1], marks[index:]...)
+		tasks = slices.Delete(tasks, index-1, index)
+		marks = slices.Delete(marks, index-1, index)
 	}
 	return tasks, marks
 }
